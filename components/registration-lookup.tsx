@@ -1,55 +1,71 @@
 "use client"
 
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast"; // ✅ Correct path
-import { Loader2 } from "lucide-react";
+import { useState } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
+import { Button } from "@/components/ui/button"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { useToast } from "@/components/ui/use-toast" // ✅ Correct path
+import { Loader2 } from "lucide-react"
 
 const formSchema = z.object({
   registrationNumber: z
     .string()
     .min(2, "Registration number is too short")
     .max(10, "Registration number is too long")
-    .regex(/^[A-Z0-9]+$/, "Registration number must contain only uppercase letters and numbers"),
-});
+    .regex(
+      /^[A-Z0-9]+$/,
+      "Registration number must contain only uppercase letters and numbers"
+    ),
+})
 
 interface RegistrationLookupProps {
-  onComplete: (data: any) => void;
+  onComplete: (data: any) => void
 }
 
 export function RegistrationLookup({ onComplete }: RegistrationLookupProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false)
+  const { showToast } = useToast()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       registrationNumber: "",
     },
-  });
+  })
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setIsLoading(true);
+    setIsLoading(true)
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      onComplete({ registrationNumber: values.registrationNumber });
+      await new Promise((resolve) => setTimeout(resolve, 1500))
+      onComplete({ registrationNumber: values.registrationNumber })
     } catch (error) {
-      toast({
+      showToast({
+        // Use showToast instead of toast
         variant: "destructive",
         title: "Error",
         description: "Failed to lookup vehicle registration. Please try again.",
-      });
+      })
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <Card className="w-full">
@@ -73,7 +89,9 @@ export function RegistrationLookup({ onComplete }: RegistrationLookupProps) {
                       placeholder="e.g., AB12CDE"
                       className="uppercase"
                       disabled={isLoading}
-                      onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                      onChange={(e) =>
+                        field.onChange(e.target.value.toUpperCase())
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -88,5 +106,5 @@ export function RegistrationLookup({ onComplete }: RegistrationLookupProps) {
         </Form>
       </CardContent>
     </Card>
-  );
+  )
 }
